@@ -10,7 +10,7 @@ La primera variable de la lista debe ser WD
 
 Return: Figura con los clusters para cada variable.
 """
-
+conda activate My_env
 ########
 ## PLOT DATA
 #Genero el vector del eje X (entre dos fechas cualquiera separadas 1 dia):
