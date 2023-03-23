@@ -96,13 +96,12 @@ def open_file(file_path: str):
 
     return df_data
 
-# if _name_ == '_main_':
-#     data = open_file(file_name)
-#     print(data)
-
-file_path = 'F:/Tesis/Data/Gumnet/ElArenosillo/G001901_20220730_20221201_ElArenosillo.txt'
-
-data = open_file(file_path)
 
 
+
+if __name__ == '__main__':
+    # file_path = 'F:/Tesis/Data/Gumnet/ElArenosillo/G001901_20220730_20221201_ElArenosillo.txt' #Disco duro
+    file_path = 'C:/Users/Carlos/Documents/Git-Repos/G001901_20220730_20221201_ElArenosillo.txt' #Temporal Lab
+    data = open_file(file_path)
+    print(data)
 
