@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Feb 12 01:28:06 2023
-
-@author: Carlos
-"""
-
 
 import xarray as xr
 import pandas as pd
