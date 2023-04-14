@@ -21,8 +21,19 @@ from wrf import (extract_vars, extract_dim, getvar, ALL_TIMES, interplevel, to_n
                  cartopy_xlim, cartopy_ylim)
 import geopandas as gpd
 
+#loc = 'lab203'
+loc = 'home'
 
-municipios = gpd.read_file('C:/Users/Carlos/Desktop/200001926.shp', driver='ESRI Shapefile')
+if loc == 'lab203':
+    municipios = gpd.read_file('C:/Users/Carlos/Desktop/200001926.shp', driver='ESRI Shapefile')
+    ncfile = nc.Dataset('C:/Users/Carlos/Downloads/wrfout_d04_2020-02-19_12_00_00.nc')
+    path_plot_data = 'C:/Users/Carlos/Desktop/Figuras Arenosillo/Cluster Analisis/'
+elif loc == 'home':
+    municipios = gpd.read_file('C:/Users/pablo/Documents/Tesis/Data/Poster _EGU23_BrisaMAdrid/200001926.shp', driver='ESRI Shapefile')
+    ncfile = nc.Dataset('C:/Users/pablo/Documents/Tesis/Data/Poster _EGU23_BrisaMAdrid/wrfout_d04_2020-02-19_12_00_00.nc')    
+    path_plot_data = 'C:/Users/pablo/Documents/Tesis/ClusterAnalisis-ElArenosillo/Cluster-Plots'
+    
+    
 #distritos = gpd.read_file('/mnt/lustre/home/e5664/wrf/python_scripts/Distritos/Distritos_20210712.shp')
 
 # Define la proyección adecuada
@@ -38,7 +49,7 @@ municipios = municipios.to_crs(epsg=4326)
 
 
 
-ncfile = nc.Dataset('C:/Users/Carlos/Downloads/wrfout_d04_2020-02-19_12_00_00.nc')
+
 
 print('----------------------')
 print('Las variables contenidas en este .nc son:')
@@ -55,6 +66,7 @@ vars_to_load = ('U10', 'V10', 'T2')
 u10 = getvar(ncfile, vars_to_load[0], timeidx=ALL_TIMES, method='join')
 v10 = getvar(ncfile, vars_to_load[1], timeidx=ALL_TIMES, method='join')
 T2 = getvar(ncfile, vars_to_load[2], timeidx=ALL_TIMES, method='join')
+orog = getvar(ncfile, 'HGT', timeidx=0)  # Extract the orography variable
 print(f'Se importarán las variables {vars_to_load}')
 print('----------------------')
 
@@ -85,10 +97,18 @@ lon = getvar(ncfile, "lon", method='join')
 
 step = 6
 fig, ax = plt.subplots(figsize=(12, 8))
+m = Basemap(projection='lcc', resolution='h', 
+            ax=ax)
+m.shadedrelief()
+
+
 levels = np.arange(np.min(wrf.to_np(T2[time_idx] - 273.16)),
                    np.max(wrf.to_np(T2[time_idx] - 273.16)),
                    .5) # especificamos los niveles de temperatura en intervalos de 2 grados
 plt.contourf(to_np(lon), to_np(lat), wrf.to_np(T2[time_idx] - 273.16), levels, cmap='coolwarm')
+
+orog_contours = plt.contour(to_np(lon), to_np(lat), wrf.to_np(orog), levels=np.arange(500,200,5), colors='black', linewidths=1.5)
+#plt.clabel(orog_contours, inline=True, fontsize=10, fmt='%d')
 
 # Dibuja los contornos de los municipios y los distritos en el eje
 municipios.boundary.plot(ax=ax, color=None, edgecolor='grey', linewidth=0.7, zorder=1)
@@ -107,5 +127,5 @@ ax.set_title(f'Viento a 10m y temperatura a 2m {str(tiempos[time_idx])}')
 plt.xlim([-4.3,-3.2])
 plt.ylim([40.1,41.1])
 
-plt.savefig('C:/Users/Carlos/Desktop/Figuras Arenosillo/Cluster Analisis/plot_breezes_PosterEGU.png')
+plt.savefig(f'{path_plot_data}plot_breezes_PosterEGU.png')
 plt.show()
